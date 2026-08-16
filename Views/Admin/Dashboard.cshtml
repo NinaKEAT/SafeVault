@@ -1,0 +1,79 @@
+@model IEnumerable<SafeVault.Models.User>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+<div class="dashboard">
+    <h1>🛠 Admin Dashboard</h1>
+    <p class="dashboard-subtitle">Logged in as: <strong>@User.Identity?.Name</strong></p>
+
+    @if (ViewBag.Success != null)
+    {
+        <div class="alert alert-success">✅ @ViewBag.Success</div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">⚠️ @ViewBag.Error</div>
+    }
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <span class="stat-number">@Model.Count()</span>
+            <span class="stat-label">Total Users</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">@Model.Count(u => u.Role == "admin")</span>
+            <span class="stat-label">Admins</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">@Model.Count(u => u.Role == "user")</span>
+            <span class="stat-label">Regular Users</span>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h2>User List</h2>
+            <a href="/Admin/CreateUser" class="btn btn-primary btn-sm">＋ Add User</a>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.UserID</td>
+                        <td>@Html.Encode(user.Username)</td>
+                        <td>@Html.Encode(user.Email)</td>
+                        <td><span class="badge @(user.Role == "admin" ? "badge-admin" : "badge-user")">@user.Role</span></td>
+                        <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="actions-cell">
+                            <a href="/Admin/EditUser/@user.UserID" class="btn btn-sm btn-secondary">✏️ Edit</a>
+                            @if (user.Username != User.Identity?.Name)
+                            {
+                                <form method="post" action="/Admin/DeleteUser" style="display:inline"
+                                      onsubmit="return confirm('Delete user @Html.Encode(user.Username)? This cannot be undone.');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@user.UserID" />
+                                    <button type="submit" class="btn btn-sm btn-danger">🗑 Delete</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted" title="Cannot delete your own account">🔒 You</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

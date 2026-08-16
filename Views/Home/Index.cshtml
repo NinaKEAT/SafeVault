@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "Home";
+}
+<div class="hero">
+    <div class="hero-card">
+        <h1>🔐 Welcome to SafeVault</h1>
+        <p class="hero-subtitle">Your secure platform for managing sensitive data</p>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="user-info-card">
+                <h2>Hello, <strong>@User.Identity.Name</strong>!</h2>
+                <p>Role: <span class="badge @(User.IsInRole("admin") ? "badge-admin" : "badge-user")">@(User.IsInRole("admin") ? "Administrator" : "User")</span></p>
+                @if (User.IsInRole("admin"))
+                {
+                    <a href="/Admin/Dashboard" class="btn btn-primary">Go to Admin Dashboard</a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="cta-buttons">
+                <a href="/Account/Login" class="btn btn-primary">Login</a>
+                <a href="/Account/Register" class="btn btn-secondary">Create Account</a>
+            </div>
+        }
+
+    </div>
+</div>

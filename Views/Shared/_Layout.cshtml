@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SafeVault</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🔒 SafeVault</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("admin"))
+                {
+                    <a href="/Admin/Dashboard">Admin Dashboard</a>
+                }
+                <span class="nav-user">👤 @User.Identity.Name</span>
+                <form method="post" action="/Account/Logout" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-nav-logout">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a href="/Account/Login">Login</a>
+                <a href="/Account/Register">Register</a>
+            }
+        </div>
+    </nav>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>&copy; @DateTime.Now.Year SafeVault — Secure Data Management</p>
+    </footer>
+
+    <script src="~/js/validation.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

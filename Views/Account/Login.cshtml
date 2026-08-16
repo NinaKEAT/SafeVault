@@ -1,0 +1,53 @@
+@model SafeVault.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+<div class="form-container">
+    <div class="form-card">
+        <h2>🔑 Sign In</h2>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <form id="loginForm" asp-action="Login" method="post" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+            <div class="form-group">
+                <label asp-for="Username">Username</label>
+                <input asp-for="Username" class="form-control" placeholder="Enter username" autocomplete="username" />
+                <span asp-validation-for="Username" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Password</label>
+                <div class="password-wrapper">
+                    <input asp-for="Password" class="form-control" placeholder="Enter password" autocomplete="current-password" />
+                    <button type="button" class="btn-show-password" aria-label="Toggle password visibility" onclick="togglePassword(this)">
+                        <span class="eye-icon">👁</span>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="field-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Login</button>
+        </form>
+
+        <p class="form-footer">Don't have an account? <a href="/Account/Register">Register here</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            if (!validateFormSecurity(this)) e.preventDefault();
+        });
+    </script>
+}
